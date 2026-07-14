@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Singon (싱온) - 초저지연 온라인 듀엣 노래방</title>
-    <meta name="description" content="헤드셋 하나로 멀리 있는 친구와 함께 부르는 초저지연 온라인 노래방">
+    <title>SINGON - 헤드셋 하나로 즐기는 온라인 노래방</title>
+    <meta name="description" content="마이크 없이 헤드셋 하나로 멀리 있는 친구와 함께 부르는 온라인 노래방">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts -->
@@ -25,14 +25,11 @@
                 <i class="fa-solid fa-microphone-lines text-xl text-white"></i>
             </div>
             <div>
-                <h1 class="text-xl font-black tracking-wider bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">SING ON (싱온)</h1>
-                <p class="text-xs text-slate-400">헤드셋 하나로 접속하는 초저지연 온라인 노래방</p>
+                <h1 class="text-xl font-black tracking-wider bg-gradient-to-r from-pink-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">SINGON</h1>
+                <p class="text-xs text-slate-400">마이크 없이 헤드셋 하나로 즐기는 온라인 노래방</p>
             </div>
         </div>
         <div class="flex items-center space-x-3">
-            <button id="side-panel-toggle" onclick="toggleSidePanel()" class="bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5">
-                <i class="fa-solid fa-sliders"></i> <span id="side-panel-toggle-text">설정 닫기</span>
-            </button>
             <button onclick="copyInviteLink()" class="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-share-nodes"></i> 초대 링크
             </button>
@@ -176,7 +173,16 @@
     </section>
 
     <!-- Center: Stage -->
-    <section id="stage-section" class="lg:col-span-8 flex flex-col gap-6">
+    <section id="stage-section" class="relative lg:col-span-8 flex flex-col gap-6">
+        <!-- 사이드 패널 토글 핸들 (데스크탑: 스테이지 좌측 가장자리 서랍 손잡이) -->
+        <button id="side-panel-handle" onclick="toggleSidePanel()" title="설정 패널 열기/닫기"
+                class="hidden lg:flex absolute -left-4 top-56 z-30 w-8 h-16 items-center justify-center rounded-full bg-slate-800/95 hover:bg-slate-600 border border-slate-600 text-slate-300 shadow-lg transition">
+            <i id="side-panel-handle-icon" class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+        <!-- 모바일용 토글 바 -->
+        <button onclick="toggleSidePanel()" class="lg:hidden w-full bg-slate-900/80 hover:bg-slate-800 border border-slate-800 rounded-xl py-2 text-xs font-bold text-slate-400 flex items-center justify-center gap-2 transition">
+            <i class="fa-solid fa-sliders"></i> <span class="side-panel-toggle-text">설정 패널 닫기</span>
+        </button>
         <div class="bg-slate-950 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col justify-between min-h-[500px] neon-border-blue transition-all duration-500" id="stage-viewport">
             <div id="ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-300"></div>
 
@@ -219,7 +225,7 @@
             <!-- Main display -->
             <div class="z-10 flex-grow flex flex-col items-center justify-center p-6 text-center select-none relative">
                 <!-- Duet visualizer cards -->
-                <div class="w-full max-w-lg grid grid-cols-2 gap-8 mb-6">
+                <div id="duet-cards" class="w-full max-w-lg grid grid-cols-2 gap-8 mb-6">
                     <div class="flex flex-col items-center p-3 bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-2xl relative overflow-hidden transition-all duration-300" id="visual-me-card">
                         <div class="w-14 h-14 rounded-full bg-cyan-500/20 flex items-center justify-center text-cyan-400 text-xl border border-cyan-500/40 mb-2">
                             <i class="fa-solid fa-user-astronaut"></i>
@@ -310,21 +316,8 @@
         <div class="absolute -right-12 -top-12 w-48 h-48 bg-pink-500/10 rounded-full blur-3xl"></div>
         <div class="absolute -left-12 -bottom-12 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl"></div>
 
-        <div class="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            <div class="md:col-span-4">
-                <span class="bg-indigo-500/20 text-indigo-300 text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider mb-2 inline-block">PROTOTYPE VALIDATION</span>
-                <h3 class="text-2xl font-black text-white">아이디어 검증 및 피드백</h3>
-                <p class="text-sm text-slate-300 mt-2 leading-relaxed">
-                    "방에서 노래 부를 때 진짜 필요한 것"을 검증하기 위한 프로토타입입니다. 에코 이펙트를 직접 경험하고 의견을 남겨주세요!
-                </p>
-                <div class="mt-4 flex flex-wrap gap-2 text-xs">
-                    <span class="bg-slate-950/60 text-slate-400 px-2.5 py-1 rounded-md border border-slate-800">초저지연 WebRTC</span>
-                    <span class="bg-slate-950/60 text-slate-400 px-2.5 py-1 rounded-md border border-slate-800">유튜브 MR 동기화</span>
-                    <span class="bg-slate-950/60 text-slate-400 px-2.5 py-1 rounded-md border border-slate-800">마이크 이펙터</span>
-                </div>
-            </div>
-
-            <div class="md:col-span-8 bg-slate-950/60 border border-slate-800 rounded-2xl p-5">
+        <div class="relative z-10">
+            <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-5">
                 <h4 class="font-bold text-sm text-slate-200 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-square-poll-vertical text-cyan-400"></i> 간단 검증 설문지
                 </h4>
@@ -498,7 +491,7 @@
 
         <h3 class="text-2xl font-black mb-2 bg-gradient-to-r from-pink-400 to-cyan-400 bg-clip-text text-transparent">노래방 초대장 도착!</h3>
         <p class="text-xs text-slate-400 mb-6 leading-relaxed">
-            친구가 초저지연 온라인 노래방에 당신을 초대했습니다.<br>
+            친구가 온라인 노래방에 당신을 초대했습니다.<br>
             함께 마이크 싱크를 맞추며 노래를 시작해보세요!
         </p>
 

@@ -33,7 +33,28 @@ function setSidePanelCollapsed(collapsed, persist = true) {
     panel.classList.toggle("hidden", collapsed);
     stage.classList.toggle("lg:col-span-8", !collapsed);
     stage.classList.toggle("lg:col-span-12", collapsed);
-    document.getElementById("side-panel-toggle-text").innerText = collapsed ? "설정 열기" : "설정 닫기";
+
+    // 접힘: 스테이지가 화면 전체로 퍼지지 않게 중앙 정렬하고 내부 요소를 키워 여백 균형을 맞춤
+    stage.classList.toggle("lg:max-w-5xl", collapsed);
+    stage.classList.toggle("lg:mx-auto", collapsed);
+    stage.classList.toggle("w-full", collapsed);
+    const ytWrap = document.getElementById("yt-player-wrap");
+    ytWrap.classList.toggle("max-w-xl", !collapsed);
+    ytWrap.classList.toggle("max-w-3xl", collapsed);
+    const lyricsPanel = document.getElementById("lyrics-panel");
+    lyricsPanel.classList.toggle("max-w-xl", !collapsed);
+    lyricsPanel.classList.toggle("max-w-3xl", collapsed);
+    const duetCards = document.getElementById("duet-cards");
+    duetCards.classList.toggle("max-w-lg", !collapsed);
+    duetCards.classList.toggle("max-w-xl", collapsed);
+
+    // 핸들 방향(데스크탑)과 토글 바 문구(모바일) 갱신
+    document.getElementById("side-panel-handle-icon").className =
+        collapsed ? "fa-solid fa-chevron-right text-xs" : "fa-solid fa-chevron-left text-xs";
+    document.querySelectorAll(".side-panel-toggle-text").forEach((el) => {
+        el.innerText = collapsed ? "설정 패널 열기" : "설정 패널 닫기";
+    });
+
     if (persist) localStorage.setItem(SIDE_PANEL_KEY, collapsed ? "1" : "0");
 }
 

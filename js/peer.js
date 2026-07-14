@@ -85,7 +85,7 @@ async function connectToPeer() {
 
 async function connectToPeerDirect(targetId) {
     initAudio();
-    logSystemMessage(`[연결] 친구 방(${targetId})으로 초저지연 연동 시도 중...`);
+    logSystemMessage(`[연결] 친구 방(${targetId})으로 연결 시도 중...`);
 
     peerConnection = peer.connect(targetId);
     setupConnectionListeners();

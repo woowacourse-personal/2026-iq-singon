@@ -197,5 +197,5 @@ function playRemoteStream(remoteStream) {
     remoteSource.connect(remoteGainNode);
     remoteSource.connect(analyserPartner);
 
-    logSystemMessage("[성공] 친구 목소리 저지연 연동 완료. 지금 말해보세요!");
+    logSystemMessage("[성공] 친구 목소리 연결 완료. 지금 말해보세요!");
 }
