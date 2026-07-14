@@ -9,3 +9,5 @@ application-local.yml
 src/main/resources/application-local.yml
 ### 로컬 데이터 (구 H2 파일 등)
 data/
+.vercel
+.env*
