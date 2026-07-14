@@ -214,6 +214,14 @@
             <!-- Main display -->
             <div class="z-10 flex-grow flex flex-col items-center justify-center p-6 text-center select-none relative">
                 <!-- Duet visualizer cards -->
+                <!-- 관전석: 듀엣이 찬 뒤 들어온 참여자가 자동 배치된다 -->
+                <div id="spectator-box" class="hidden absolute left-4 top-4 z-20 flex-col items-start gap-2">
+                    <div class="text-[10px] uppercase tracking-widest text-slate-500 font-mono">
+                        <i class="fa-solid fa-eye text-violet-400"></i> 관전석 <span id="spectator-count" class="text-violet-300 font-bold">0</span>
+                    </div>
+                    <div id="spectator-list" class="flex flex-col gap-2"></div>
+                </div>
+
                 <!-- 솔로: 내 카드만 중앙 표시. 친구가 접속하면 파트너 카드가 추가된다 -->
                 <div id="duet-cards" class="w-full flex justify-center gap-8 mb-6">
                     <div class="w-56 flex flex-col items-center p-3 bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-2xl relative overflow-hidden transition-all duration-300" id="visual-me-card">

@@ -86,6 +86,26 @@ function setPartnerCardVisible(visible) {
     card.classList.toggle("flex", visible);
 }
 
+// --- 관전석: roster 수신 시 좌측에 관전자 칩 자동 배치 ---
+function renderSpectators(ids) {
+    const box = document.getElementById("spectator-box");
+    const list = document.getElementById("spectator-list");
+    box.classList.toggle("hidden", ids.length === 0);
+    box.classList.toggle("flex", ids.length > 0);
+    document.getElementById("spectator-count").innerText = ids.length;
+
+    list.innerHTML = "";
+    ids.forEach((id, i) => {
+        const isMe = id === myPeerId;
+        const chip = document.createElement("div");
+        chip.className = "flex items-center gap-2 bg-slate-900/70 backdrop-blur-sm border border-slate-800 rounded-full pl-1.5 pr-3 py-1";
+        chip.innerHTML =
+            '<span class="w-6 h-6 rounded-full bg-violet-500/20 border border-violet-500/40 text-violet-300 flex items-center justify-center text-[10px]"><i class="fa-solid fa-eye"></i></span>' +
+            `<span class="text-[11px] font-semibold ${isMe ? "text-violet-300" : "text-slate-300"}">관전자 ${i + 1}${isMe ? " (나)" : ""}</span>`;
+        list.appendChild(chip);
+    });
+}
+
 // --- 연결 상태 배지 ---
 function setConnectionBadge(connected) {
     const badge = document.getElementById("connection-status-badge");

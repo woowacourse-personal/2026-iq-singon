@@ -47,7 +47,10 @@ js/main.js      엔트리포인트 (?join= 파라미터 파싱)
 - 재생을 시작한 쪽이 리더(`isSyncLeader`)가 되어 4초마다 `{t:'yt', a:'sync', time}` 브로드캐스트
 - 5초 주기 ping/pong으로 RTT 측정 (`currentRttMs`), 수신 측은 RTT/2 보정
 - 드리프트 > 0.4초면 `seekTo` 보정
-- 데이터 메시지 타입: `mode | song | yt | synth | emote | ping | pong` (peer.js의 handlePeerData 참조)
+- 데이터 메시지 타입: `mode | song | yt | synth | emote | ping | pong | role | roster` (peer.js의 handlePeerData 참조)
+- 관전석: 듀엣(2인)이 찬 뒤 접속하면 호스트가 `role: spectator`로 자동 배정.
+  데이터는 호스트 중심 스타형(호스트가 상태 릴레이), 음성은 싱어→관전자 단방향 콜.
+  관전자는 리액션/핑만 송신 가능, 마이크 자동 꺼짐
 
 ## 작업 규칙
 
@@ -66,7 +69,8 @@ js/main.js      엔트리포인트 (?join= 파라미터 파싱)
 5. 모바일 대응 점검 — 특히 카톡 인앱 브라우저 마이크 권한, iOS 사파리 AudioContext 정책
 6. (연결 실패율 높을 경우) TURN 릴레이: Oracle Always Free + coturn
 7. (나중) 자체 시그널링: Cloudflare Workers + Durable Objects
-8. (나중) 3~4인 방: 풀메시 P2P — 음성만이라 4인까지 메시 가능, 그 이상은 SFU 필요라 보류
+8. 3번째 이후 참여자 관전석 자동 배치 구현됨(2026-07) — 듀엣 2인 + 관전 N명, 싱어 음성 단방향 수신.
+   (나중) 3~4인 '동시 가창' 풀메시는 보류 — 그 이상은 SFU 필요
 
 ## 알려진 리스크 / 주의점
 

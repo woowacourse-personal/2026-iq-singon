@@ -111,6 +111,8 @@ async function toggleMic() {
             document.getElementById("monitoring-control").classList.remove("opacity-60", "pointer-events-none");
             logSystemMessage("[마이크] 오디오 입력 활성화! 에코 이펙터 장착 완료.");
             updateAudioSettings();
+            // 이미 입장해 있는 관전자에게도 목소리 송출 시작 (peer.js)
+            if (typeof onMicEnabled === "function") onMicEnabled();
         } catch (err) {
             console.error("마이크 접근 오류:", err);
             logSystemMessage("[에러] 마이크를 찾을 수 없거나 권한이 거부되었습니다.");
