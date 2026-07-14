@@ -51,7 +51,7 @@ function initPeerJS() {
 
     peer.on("error", (err) => {
         if (err.type === "peer-unavailable") {
-            showCustomAlert("🔌 연결 실패", "해당 방 ID를 찾을 수 없습니다.<br>친구가 페이지를 열어둔 상태인지, ID에 오타가 없는지 확인해 주세요.");
+            showCustomAlert('<i class="fa-solid fa-plug-circle-xmark"></i> 연결 실패', "해당 방 ID를 찾을 수 없습니다.<br>친구가 페이지를 열어둔 상태인지, ID에 오타가 없는지 확인해 주세요.");
         } else if (err.type === "unavailable-id") {
             // 4자리 랜덤 ID 충돌 → 새 ID로 재시도
             logSystemMessage("[서버] 방 ID가 이미 사용 중입니다. 새 ID로 재시도합니다.");
@@ -107,7 +107,7 @@ function initPeerJS() {
 async function connectToPeer() {
     const targetId = document.getElementById("target-peer-id").value.trim();
     if (!targetId) {
-        showCustomAlert("⚠️ 방 ID 필요", "연결할 친구의 방 ID를 입력해 주세요.<br>예시: singon-room-1234");
+        showCustomAlert('<i class="fa-solid fa-triangle-exclamation"></i> 방 ID 필요', "연결할 친구의 방 ID를 입력해 주세요.<br>예시: singon-room-1234");
         return;
     }
     await connectToPeerDirect(targetId);
@@ -280,7 +280,7 @@ function applyRole(role) {
         }
         document.getElementById("partner-name").innerText = "싱어";
         showCustomAlert(
-            "👀 관전 모드로 입장",
+            '<i class="fa-solid fa-eye"></i> 관전 모드로 입장',
             "듀엣 자리가 이미 차서 관전석에 배치되었습니다.<br>싱어들의 노래를 감상하며 리액션으로 응원해 보세요!"
         );
         logSystemMessage("[관전] 관전 모드로 입장했습니다. 마이크는 자동으로 꺼졌습니다.");
@@ -401,7 +401,7 @@ async function copyRoomID() {
 
 async function copyInviteLink() {
     if (!myPeerId) {
-        showCustomAlert("⏳ 잠시만요", "방 ID가 아직 생성 중입니다. 잠시 후 다시 시도해 주세요.");
+        showCustomAlert('<i class="fa-solid fa-hourglass-half"></i> 잠시만요', "방 ID가 아직 생성 중입니다. 잠시 후 다시 시도해 주세요.");
         return;
     }
 
@@ -411,7 +411,7 @@ async function copyInviteLink() {
     if (location.protocol === "file:" || baseUrl.startsWith("blob:")) {
         await copyToClipboard(myPeerId);
         showCustomAlert(
-            "🔗 링크 대신 방 ID를 복사했어요",
+            '<i class="fa-solid fa-link"></i> 링크 대신 방 ID를 복사했어요',
             `현재는 로컬 파일로 실행 중이라 링크 공유가 불가합니다.<br>배포된 주소에서는 초대 링크가 정상 작동합니다.<br><br>복사된 방 ID: <strong>${myPeerId}</strong>`
         );
         return;

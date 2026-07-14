@@ -86,13 +86,11 @@ function setPartnerCardVisible(visible) {
     card.classList.toggle("flex", visible);
 }
 
-// --- 관전석: roster 수신 시 좌측에 관전자 칩 자동 배치 ---
+// --- 관전석: roster 수신 시 좌측 컬럼에 관전자 칩 자동 배치 ---
 function renderSpectators(ids) {
-    const box = document.getElementById("spectator-box");
     const list = document.getElementById("spectator-list");
-    box.classList.toggle("hidden", ids.length === 0);
-    box.classList.toggle("flex", ids.length > 0);
     document.getElementById("spectator-count").innerText = ids.length;
+    document.getElementById("spectator-empty").classList.toggle("hidden", ids.length > 0);
 
     list.innerHTML = "";
     ids.forEach((id, i) => {

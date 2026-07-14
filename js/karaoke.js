@@ -41,7 +41,6 @@ function setKaraokeMode(mode, broadcast = true) {
     const songSelect = document.getElementById("song-select");
     const ytWrap = document.getElementById("yt-player-wrap");
     const lyricsPanel = document.getElementById("lyrics-panel");
-    const engineLabel = document.getElementById("engine-label");
 
     if (mode === "youtube") {
         ytBtn.className = "px-3 py-1.5 bg-red-600/80 text-white transition";
@@ -51,7 +50,6 @@ function setKaraokeMode(mode, broadcast = true) {
         ytWrap.classList.remove("hidden");
         lyricsPanel.classList.add("hidden");
         lyricsPanel.classList.remove("flex");
-        engineLabel.innerText = "YouTube Sync";
         logSystemMessage("[모드] 유튜브 MR 모드로 전환. 공식 MR 영상 주소를 불러오세요.");
     } else {
         synthBtn.className = "px-3 py-1.5 bg-violet-600/80 text-white transition";
@@ -61,7 +59,6 @@ function setKaraokeMode(mode, broadcast = true) {
         ytWrap.classList.add("hidden");
         lyricsPanel.classList.remove("hidden");
         lyricsPanel.classList.add("flex");
-        engineLabel.innerText = "Procedural Synth";
         loadSelectedSong(false);
         logSystemMessage("[모드] 오리지널 곡 모드로 전환. 저작권 프리 자체 반주로 연주됩니다.");
     }
@@ -118,7 +115,7 @@ function extractVideoId(input) {
 async function loadYouTubeSong(videoIdFromPeer = null, broadcast = true) {
     const videoId = videoIdFromPeer || extractVideoId(document.getElementById("yt-url-input").value);
     if (!videoId) {
-        showCustomAlert("⚠️ 주소 확인 필요", "유튜브 영상 주소 형식이 아닙니다.<br>예: https://www.youtube.com/watch?v=XXXXXXXXXXX");
+        showCustomAlert('<i class="fa-solid fa-triangle-exclamation"></i> 주소 확인 필요', "유튜브 영상 주소 형식이 아닙니다.<br>예: https://www.youtube.com/watch?v=XXXXXXXXXXX");
         return;
     }
 
@@ -187,10 +184,10 @@ function onYtError(event) {
     stopYtSyncLoop();
     currentVideoId = null;
 
-    let title = "⚠️ 유튜브 재생 오류";
+    let title = '<i class="fa-solid fa-triangle-exclamation"></i> 유튜브 재생 오류';
     let message;
     if (code === 101 || code === 150) {
-        title = "🚫 재생이 차단된 영상";
+        title = '<i class="fa-solid fa-ban"></i> 재생이 차단된 영상';
         message = "음원 권리사가 이 영상의 외부 사이트 재생을 차단했습니다.<br>" +
             "<strong>TJ노래방 공식 MR은 전면 차단</strong>되어 사용할 수 없습니다.<br>" +
             "<strong class=\"text-emerald-400\">금영(KY)노래방 공식 MR</strong>은 재생되는 곡이 많으니 아래에서 검색해 보세요. (곡에 따라 차단될 수 있음)<br><br>" +
@@ -323,7 +320,7 @@ function toggleKaraokeSong() {
 
     if (karaokeMode === "youtube") {
         if (!ytPlayer || !ytPlayer.playVideo) {
-            showCustomAlert("🎵 선곡 필요", "먼저 상단에 유튜브 MR 영상 주소를 붙여넣고 [불러오기]를 눌러주세요.");
+            showCustomAlert('<i class="fa-solid fa-music"></i> 선곡 필요', "먼저 상단에 유튜브 MR 영상 주소를 붙여넣고 [불러오기]를 눌러주세요.");
             return;
         }
         if (isKaraokePlaying) {
