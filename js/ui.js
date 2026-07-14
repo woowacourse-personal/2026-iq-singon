@@ -22,6 +22,44 @@ function logPartnerMessage(msg) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
+// --- 사이드 패널 (연결/이펙트 콘솔) 접기·펴기 ---
+const SIDE_PANEL_KEY = "singon_side_panel_collapsed";
+
+// persist=false: 게스트 진입/연결 시 자동 접기처럼 강제로 바꾸는 경우.
+// 사용자가 직접 토글한 상태만 다음 방문에 기억한다.
+function setSidePanelCollapsed(collapsed, persist = true) {
+    const panel = document.getElementById("side-panel");
+    const stage = document.getElementById("stage-section");
+    panel.classList.toggle("hidden", collapsed);
+    stage.classList.toggle("lg:col-span-8", !collapsed);
+    stage.classList.toggle("lg:col-span-12", collapsed);
+    document.getElementById("side-panel-toggle-text").innerText = collapsed ? "설정 열기" : "설정 닫기";
+    if (persist) localStorage.setItem(SIDE_PANEL_KEY, collapsed ? "1" : "0");
+}
+
+function toggleSidePanel() {
+    setSidePanelCollapsed(!document.getElementById("side-panel").classList.contains("hidden"));
+}
+
+// --- 스테이지 하단 마이크 퀵 토글 (패널이 접혀 있어도 마이크 제어 가능) ---
+async function quickToggleMic() {
+    const cb = document.getElementById("mic-toggle");
+    cb.checked = !cb.checked;
+    await toggleMic();
+}
+
+function syncQuickMicBtn() {
+    const btn = document.getElementById("quick-mic-btn");
+    if (!btn) return;
+    const on = !!micStream;
+    btn.innerHTML = on
+        ? '<i class="fa-solid fa-microphone"></i> 마이크 ON'
+        : '<i class="fa-solid fa-microphone-slash"></i> 마이크 OFF';
+    btn.className = on
+        ? "bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold px-4 py-3 rounded-2xl flex items-center gap-2 transition duration-200 text-sm shadow-md shadow-pink-500/20"
+        : "bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-3 rounded-2xl flex items-center gap-2 transition duration-200 text-sm";
+}
+
 // --- 연결 상태 배지 ---
 function setConnectionBadge(connected) {
     const badge = document.getElementById("connection-status-badge");

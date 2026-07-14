@@ -111,6 +111,10 @@ function setupConnectionListeners() {
         document.getElementById("voice-indicator-partner").innerText = "Online";
         startRttMeasurement();
 
+        // 연결 완료 → 노래에 집중하도록 설정 패널 자동 접기
+        setSidePanelCollapsed(true, false);
+        logSystemMessage("[UI] 설정 패널을 접었습니다. 상단 [설정 열기]로 언제든 다시 열 수 있어요.");
+
         // 현재 선곡 상태를 새 참여자에게 공유
         if (karaokeMode === "youtube" && currentVideoId) {
             sendData({ t: "song", mode: "youtube", videoId: currentVideoId });

@@ -124,6 +124,8 @@ async function toggleMic() {
         document.getElementById("monitoring-control").classList.add("opacity-60", "pointer-events-none");
         logSystemMessage("[마이크] 마이크 장치가 꺼졌습니다.");
     }
+
+    if (typeof syncQuickMicBtn === "function") syncQuickMicBtn();
 }
 
 function toggleMonitoring() {

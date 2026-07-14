@@ -30,6 +30,12 @@
             </div>
         </div>
         <div class="flex items-center space-x-3">
+            <button id="side-panel-toggle" onclick="toggleSidePanel()" class="bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-sliders"></i> <span id="side-panel-toggle-text">설정 닫기</span>
+            </button>
+            <button onclick="copyInviteLink()" class="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/30 text-emerald-300 text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-share-nodes"></i> 초대 링크
+            </button>
             <button onclick="showSharingGuide()" class="bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 text-blue-300 text-xs px-3 py-1.5 rounded-lg font-bold transition flex items-center gap-1.5">
                 <i class="fa-solid fa-circle-info"></i> 친구 초대 가이드
             </button>
@@ -42,8 +48,8 @@
 </header>
 
 <main class="flex-grow max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Left: Connection & Audio -->
-    <section class="lg:col-span-4 flex flex-col gap-6">
+    <!-- Left: Connection & Audio (접이식 사이드 패널) -->
+    <section id="side-panel" class="lg:col-span-4 flex flex-col gap-6">
 
         <!-- Connection Card -->
         <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 shadow-xl relative overflow-hidden">
@@ -170,7 +176,7 @@
     </section>
 
     <!-- Center: Stage -->
-    <section class="lg:col-span-8 flex flex-col gap-6">
+    <section id="stage-section" class="lg:col-span-8 flex flex-col gap-6">
         <div class="bg-slate-950 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl relative flex flex-col justify-between min-h-[500px] neon-border-blue transition-all duration-500" id="stage-viewport">
             <div id="ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-300"></div>
 
@@ -261,6 +267,9 @@
                     </button>
                     <button onclick="stopKaraokeSong()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-3 rounded-2xl flex items-center gap-2 transition duration-200 text-sm">
                         <i class="fa-solid fa-stop"></i> 정지
+                    </button>
+                    <button id="quick-mic-btn" onclick="quickToggleMic()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-3 rounded-2xl flex items-center gap-2 transition duration-200 text-sm" title="마이크 켜기/끄기">
+                        <i class="fa-solid fa-microphone-slash"></i> 마이크 OFF
                     </button>
                 </div>
 
