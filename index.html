@@ -154,9 +154,16 @@
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
                         <span>반주/MR 볼륨 (Music Vol)</span>
-                        <span id="label-music-vol" class="text-cyan-400 font-semibold">60%</span>
+                        <span id="label-music-vol" class="text-cyan-400 font-semibold">40%</span>
                     </div>
-                    <input id="slider-music-vol" type="range" min="0" max="100" value="60" oninput="updateAudioSettings()" class="w-full accent-cyan-400 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    <input id="slider-music-vol" type="range" min="0" max="100" value="40" oninput="updateAudioSettings()" class="w-full accent-cyan-400 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                </div>
+                <div>
+                    <div class="flex justify-between text-xs text-slate-400 mb-1">
+                        <span>친구 목소리 볼륨 (Friend Vol)</span>
+                        <span id="label-friend-vol" class="text-emerald-400 font-semibold">130%</span>
+                    </div>
+                    <input id="slider-friend-vol" type="range" min="0" max="200" value="130" oninput="updateAudioSettings()" class="w-full accent-emerald-400 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
                 </div>
             </div>
         </div>

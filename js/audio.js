@@ -24,6 +24,9 @@ let dataArrayPartner = null;
 // 신스 볼륨
 let synthGainNode = null;
 
+// 상대방(원격) 목소리 볼륨
+let remoteGainNode = null;
+
 function initAudio() {
     if (audioContext) {
         // iOS 사파리: 유저 제스처 시점마다 suspended 상태를 풀어준다.
@@ -56,7 +59,12 @@ function initAudio() {
     delayNode.connect(delayFilterNode);
     delayFilterNode.connect(delayFeedbackNode);
     delayFeedbackNode.connect(delayNode);
-    delayLevelNode.gain.value = 0.35;
+    delayLevelNode.gain.value = 0.5;
+
+    // 상대방 목소리: MR에 묻히지 않도록 증폭 가능한 게인 (기본 130%)
+    remoteGainNode = audioContext.createGain();
+    remoteGainNode.gain.value = 1.3;
+    remoteGainNode.connect(audioContext.destination);
 
     analyserMe = audioContext.createAnalyser();
     analyserMe.fftSize = 64;
@@ -136,15 +144,18 @@ function updateAudioSettings() {
     const echoDepth = document.getElementById("slider-echo-depth").value;
     const echoDelay = document.getElementById("slider-echo-delay").value;
     const musicVol = document.getElementById("slider-music-vol").value;
+    const friendVol = document.getElementById("slider-friend-vol").value;
 
     document.getElementById("label-mic-vol").innerText = `${micVol}%`;
     document.getElementById("label-echo-depth").innerText = `${echoDepth}%`;
     document.getElementById("label-echo-delay").innerText = `${(echoDelay / 100).toFixed(2)}s`;
     document.getElementById("label-music-vol").innerText = `${musicVol}%`;
+    document.getElementById("label-friend-vol").innerText = `${friendVol}%`;
 
     if (!audioContext) return;
 
     if (micGainNode) micGainNode.gain.value = micVol / 100;
+    if (remoteGainNode) remoteGainNode.gain.value = friendVol / 100;
 
     if (delayNode) {
         delayNode.delayTime.setValueAtTime(echoDelay / 100, audioContext.currentTime);
@@ -181,7 +192,7 @@ function playRemoteStream(remoteStream) {
     analyserPartner.fftSize = 64;
     dataArrayPartner = new Uint8Array(analyserPartner.frequencyBinCount);
 
-    remoteSource.connect(audioContext.destination);
+    remoteSource.connect(remoteGainNode);
     remoteSource.connect(analyserPartner);
 
     logSystemMessage("[성공] 친구 목소리 저지연 연동 완료. 지금 말해보세요!");
