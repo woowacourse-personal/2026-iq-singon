@@ -191,12 +191,12 @@ function onYtError(event) {
     let title = "⚠️ 유튜브 재생 오류";
     let message;
     if (code === 101 || code === 150) {
-        title = "🚫 임베드 비허용 영상";
-        message = "이 영상은 소유자(또는 음원 권리사)가 외부 사이트 재생을 차단했습니다.<br>" +
-            "아래 공식 채널의 MR은 임베드가 허용되어 정상 재생됩니다.<br><br>" +
-            '<a href="https://www.youtube.com/@TJ%EB%85%B8%EB%9E%98%EB%B0%A9TJKaraoke/search" target="_blank" rel="noopener" class="text-cyan-400 underline font-bold">▶ TJ노래방 공식 채널에서 곡 검색 ↗</a><br>' +
+        title = "🚫 재생이 차단된 영상";
+        message = "음원 권리사가 이 영상의 외부 사이트 재생을 차단했습니다.<br>" +
+            "<strong>TJ노래방 공식 MR은 전면 차단</strong>되어 사용할 수 없습니다.<br>" +
+            "<strong class=\"text-emerald-400\">금영(KY)노래방 공식 MR</strong>은 재생되는 곡이 많으니 아래에서 검색해 보세요. (곡에 따라 차단될 수 있음)<br><br>" +
             '<a href="https://www.youtube.com/@KARAOKEKY/search" target="_blank" rel="noopener" class="text-cyan-400 underline font-bold">▶ 금영노래방 공식 채널에서 곡 검색 ↗</a><br><br>' +
-            "검색 결과에서 원하는 곡의 주소를 복사해 다시 붙여넣어 주세요.";
+            "검색 결과에서 곡 주소를 복사해 다시 붙여넣어 주세요.";
     } else if (code === 100) {
         message = "영상을 찾을 수 없습니다.<br>삭제되었거나 비공개 처리된 영상입니다.";
     } else if (code === 2) {
