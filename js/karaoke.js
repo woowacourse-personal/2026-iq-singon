@@ -11,7 +11,6 @@ let isKaraokePlaying = false;
 let karaokeTimer = null;
 let karaokeSeconds = 0;
 let currentSongKey = "citypop";
-let virtualSingingInterval = null;
 
 // --- youtube 모드 상태 ---
 let ytPlayer = null;
@@ -356,8 +355,6 @@ function toggleKaraokeSong() {
         karaokeSeconds += 0.5;
         updateLyricsProgress(song, karaokeSeconds);
     }, 500);
-
-    simulatePartnerDuetText();
 }
 
 function pauseSynthSong() {
@@ -365,7 +362,6 @@ function pauseSynthSong() {
     setPlayButtonState(false);
     stopSynthPlayback();
     clearInterval(karaokeTimer);
-    clearInterval(virtualSingingInterval);
     sendData({ t: "synth", a: "pause" });
     logSystemMessage("[노래방] 반주가 일시정지되었습니다.");
 }
@@ -381,7 +377,6 @@ function stopKaraokeSong(broadcast = true) {
     } else {
         stopSynthPlayback();
         clearInterval(karaokeTimer);
-        clearInterval(virtualSingingInterval);
         karaokeSeconds = 0;
         loadSelectedSong(false);
         if (broadcast) sendData({ t: "synth", a: "stop" });
@@ -441,38 +436,5 @@ function updateLyricsProgress(song, elapsed) {
     }
 }
 
-// ============================================================
-// AI 가상 파트너 (솔로 모드 전용)
-// ============================================================
-let virtualPartnerName = "민우 (AI)";
-
-function simulatePartnerDuetText() {
-    if (isConnected()) return; // 실제 친구가 있으면 AI 침묵
-    const lines = [
-        "진짜 바로 앞에서 부르는 느낌인데요? 이펙트 대박!",
-        "딜레이 셋팅 귀에 꽂히는 느낌 너무 좋아요!",
-        "함께 부를 때 목소리 안 엉키는 게 완전 몰입형이네요.",
-        "커플노래방 안 부러워요, 집에서 헤드셋 끼니까 꿀잼!",
-        "노래 엄청 시원하게 잘하시네요!! 🔥"
-    ];
-    virtualSingingInterval = setInterval(() => {
-        if (!isKaraokePlaying) return;
-        logPartnerMessage(lines[Math.floor(Math.random() * lines.length)]);
-    }, 12000);
-}
-
-function changePartner() {
-    const select = document.getElementById("virtual-partner-select");
-    const nameSpan = document.getElementById("partner-name");
-
-    if (select.value === "minwoo") {
-        virtualPartnerName = "민우 (AI)";
-        document.getElementById("partner-avatar").innerHTML = '<i class="fa-solid fa-user-group"></i>';
-        logSystemMessage("[파트너] 감미로운 발라더 민우로 교체했습니다.");
-    } else {
-        virtualPartnerName = "지수 (AI)";
-        document.getElementById("partner-avatar").innerHTML = '<i class="fa-solid fa-user-ninja"></i>';
-        logSystemMessage("[파트너] 시티팝 보컬 지수로 교체했습니다.");
-    }
-    nameSpan.innerText = virtualPartnerName;
-}
+// 파트너 표시 이름 (연결된 친구)
+let virtualPartnerName = "친구";

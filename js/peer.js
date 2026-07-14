@@ -109,11 +109,12 @@ function setupConnectionListeners() {
         virtualPartnerName = "친구";
         document.getElementById("partner-name").innerText = virtualPartnerName;
         document.getElementById("voice-indicator-partner").innerText = "Online";
+        setPartnerCardVisible(true); // 친구 입장 → 스테이지에 파트너 카드 추가
         startRttMeasurement();
 
         // 연결 완료 → 노래에 집중하도록 설정 패널 자동 접기
         setSidePanelCollapsed(true, false);
-        logSystemMessage("[UI] 설정 패널을 접었습니다. 상단 [설정 열기]로 언제든 다시 열 수 있어요.");
+        logSystemMessage("[UI] 설정 패널을 접었습니다. 스테이지 왼쪽 화살표 핸들로 언제든 다시 열 수 있어요.");
 
         // 현재 선곡 상태를 새 참여자에게 공유
         if (karaokeMode === "youtube" && currentVideoId) {
@@ -126,6 +127,7 @@ function setupConnectionListeners() {
     peerConnection.on("close", () => {
         logSystemMessage("[알림] 친구와 연결이 종료되어 솔로 모드로 복원됩니다.");
         setConnectionBadge(false);
+        setPartnerCardVisible(false);
         stopRttMeasurement();
         peerConnection = null;
     });
@@ -140,7 +142,7 @@ function handlePeerData(data) {
     switch (data.t) {
         case "emote":
             triggerEmojiBubble(data.v);
-            logPartnerMessage(`리액션: ${data.v}`);
+            logPartnerMessage(`리액션: ${emoteLabel(data.v)}`);
             break;
         case "mode":
             setKaraokeMode(data.mode, false);

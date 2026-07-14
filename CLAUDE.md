@@ -38,7 +38,7 @@ js/audio.js     Web Audio 파이프라인: 마이크, 에코 FX, 모니터링, �
 js/synth.js     프로시저럴 신스 반주 엔진
 js/karaoke.js   재생 컨트롤러, 모드 전환(youtube/synth), YT iframe 동기화, 가사 엔진
 js/peer.js      PeerJS 연결, 데이터 프로토콜 라우터(handlePeerData), RTT 측정, 초대 링크
-js/ui.js        채팅 로그, 비주얼라이저, 이모트, 모달, 검증 설문(localStorage)
+js/ui.js        채팅 로그, 사이드 패널 접기/펴기, 비주얼라이저, 이모트, 모달
 js/main.js      엔트리포인트 (?join= 파라미터 파싱)
 ```
 
@@ -62,7 +62,7 @@ js/main.js      엔트리포인트 (?join= 파라미터 파싱)
 1. **Vercel 프로덕션 배포** ← 지금 여기. 초대 링크가 배포 주소에서만 작동하므로 최우선
 2. 실환경 P2P 테스트 (서로 다른 네트워크: LTE↔와이파이). STUN만으로 연결 실패율 확인
 3. ConvolverNode 룸 리버브 (노이즈 버스트로 IR 프로시저럴 생성, 외부 에셋 0개)
-4. 피드백 설문 localStorage → Supabase 무료 티어 (실제 데이터 수집)
+4. 피드백 수집 채널 마련 — 설문 UI는 2026-07 UX 단순화로 제거됨. 필요 시 별도 폼(구글폼 등) 또는 Supabase로 재도입
 5. 모바일 대응 점검 — 특히 카톡 인앱 브라우저 마이크 권한, iOS 사파리 AudioContext 정책
 6. (연결 실패율 높을 경우) TURN 릴레이: Oracle Always Free + coturn
 7. (나중) 자체 시그널링: Cloudflare Workers + Durable Objects

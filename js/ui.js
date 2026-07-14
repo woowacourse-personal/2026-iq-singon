@@ -1,5 +1,5 @@
 // ============================================================
-// ui.js — 채팅 로그 / 비주얼라이저 / 이모트 / 모달 / 검증 설문
+// ui.js — 채팅 로그 / 사이드 패널 / 비주얼라이저 / 이모트 / 모달
 // ============================================================
 
 // --- 채팅 로그 ---
@@ -44,9 +44,6 @@ function setSidePanelCollapsed(collapsed, persist = true) {
     const lyricsPanel = document.getElementById("lyrics-panel");
     lyricsPanel.classList.toggle("max-w-xl", !collapsed);
     lyricsPanel.classList.toggle("max-w-3xl", collapsed);
-    const duetCards = document.getElementById("duet-cards");
-    duetCards.classList.toggle("max-w-lg", !collapsed);
-    duetCards.classList.toggle("max-w-xl", collapsed);
 
     // 핸들 방향(데스크탑)과 토글 바 문구(모바일) 갱신
     document.getElementById("side-panel-handle-icon").className =
@@ -54,6 +51,7 @@ function setSidePanelCollapsed(collapsed, persist = true) {
     document.querySelectorAll(".side-panel-toggle-text").forEach((el) => {
         el.innerText = collapsed ? "설정 패널 열기" : "설정 패널 닫기";
     });
+    // 참고: duet-cards는 고정 폭 카드(flex)라 접힘 시 별도 보정 불필요
 
     if (persist) localStorage.setItem(SIDE_PANEL_KEY, collapsed ? "1" : "0");
 }
@@ -79,6 +77,13 @@ function syncQuickMicBtn() {
     btn.className = on
         ? "bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white font-bold px-4 py-3 rounded-2xl flex items-center gap-2 transition duration-200 text-sm shadow-md shadow-pink-500/20"
         : "bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold px-4 py-3 rounded-2xl flex items-center gap-2 transition duration-200 text-sm";
+}
+
+// --- 파트너 카드: 친구가 접속하면 스테이지에 추가 ---
+function setPartnerCardVisible(visible) {
+    const card = document.getElementById("visual-partner-card");
+    card.classList.toggle("hidden", !visible);
+    card.classList.toggle("flex", visible);
 }
 
 // --- 연결 상태 배지 ---
@@ -141,33 +146,15 @@ function renderVisualizers() {
         }
     }
 
-    // 2. 파트너 목소리 (실제 스트림 or AI 시뮬레이션)
+    // 2. 파트너(친구) 목소리
     const partnerBars = document.getElementById("visualizer-partner").children;
-    let partnerVolume = 0;
     let hasSignal = false;
 
     if (analyserPartner) {
-        // 실제 친구 스트림
         analyserPartner.getByteFrequencyData(dataArrayPartner);
         let s = 0;
         for (let i = 0; i < partnerBars.length; i++) {
             const value = dataArrayPartner[i] || 0;
-            s += value;
-            partnerBars[i].style.height = `${Math.min(100, Math.max(10, (value / 255) * 100))}%`;
-        }
-        hasSignal = s > 150;
-        if (hasSignal) partnerVolume = s;
-    } else if (isKaraokePlaying && karaokeMode === "synth") {
-        // AI 파트너 시뮬레이션 (synth 모드 솔로 전용)
-        const turn = document.getElementById("lyric-singer-turn").innerText;
-        if (turn.includes("민우") || turn.includes("지수") || turn.includes("함께")) {
-            partnerVolume = Math.sin(Date.now() / 150) * 80 + 110 + Math.random() * 30;
-        } else {
-            partnerVolume = Math.random() * 10;
-        }
-        let s = 0;
-        for (let i = 0; i < partnerBars.length; i++) {
-            const value = partnerVolume * (1 - Math.abs(i - 7) / 10);
             s += value;
             partnerBars[i].style.height = `${Math.min(100, Math.max(10, (value / 255) * 100))}%`;
         }
@@ -201,24 +188,40 @@ function triggerAmbientPulse(color, intensity) {
     }
 }
 
-// --- 이모트 ---
-function sendEmote(emote) {
-    triggerEmojiBubble(emote);
+// --- 이모트 (FontAwesome 아이콘 기반) ---
+const EMOTES = {
+    clap:  { icon: "fa-hands-clapping", color: "text-amber-300",  label: "박수" },
+    fire:  { icon: "fa-fire",           color: "text-orange-400", label: "불타오름" },
+    heart: { icon: "fa-heart",          color: "text-rose-400",   label: "하트" },
+    star:  { icon: "fa-star",           color: "text-yellow-300", label: "최고" }
+};
+
+function emoteLabel(key) {
+    return EMOTES[key] ? EMOTES[key].label : key;
+}
+
+function sendEmote(key) {
+    triggerEmojiBubble(key);
     const chatBox = document.getElementById("chat-box");
     const div = document.createElement("div");
     div.className = "text-cyan-300";
-    div.textContent = `[나] ${emote}`;
+    div.textContent = `[나] ${emoteLabel(key)}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    sendData({ t: "emote", v: emote });
+    sendData({ t: "emote", v: key });
 }
 
-function triggerEmojiBubble(emote) {
+function triggerEmojiBubble(key) {
     const stage = document.getElementById("stage-viewport");
     const bubble = document.createElement("div");
-    bubble.innerText = emote;
-    bubble.className = "absolute text-3xl pointer-events-none transition-all duration-1000 ease-out z-30 select-none";
+    const emote = EMOTES[key];
+    if (emote) {
+        bubble.innerHTML = `<i class="fa-solid ${emote.icon} ${emote.color}"></i>`;
+    } else {
+        bubble.innerText = key; // 구버전 클라이언트가 보낸 이모지 폴백
+    }
+    bubble.className = "absolute text-3xl pointer-events-none transition-all duration-1000 ease-out z-30 select-none drop-shadow-lg";
     bubble.style.left = `${Math.random() * 60 + 20}%`;
     bubble.style.bottom = "80px";
     bubble.style.opacity = "1";
@@ -246,7 +249,6 @@ function closeModal(id) {
 
 function showSharingGuide() { openModal("sharing-guide-modal"); }
 function closeSharingGuide() { closeModal("sharing-guide-modal"); }
-function closeStatsModal() { closeModal("stats-modal"); }
 function closeCustomAlert() { closeModal("custom-alert-modal"); }
 
 function showCustomAlert(title, message) {
@@ -255,63 +257,3 @@ function showCustomAlert(title, message) {
     openModal("custom-alert-modal");
 }
 
-// ============================================================
-// 검증 설문 (localStorage)
-// ============================================================
-const FEEDBACK_STORAGE_KEY = "singon_prototype_feedback";
-
-function submitFeedback(event) {
-    event.preventDefault();
-
-    const submission = {
-        id: Date.now(),
-        immersion: document.getElementById("q1").value,
-        audioQuality: document.getElementById("q2").value,
-        duetIntention: document.getElementById("q3").value,
-        paymentIntention: document.getElementById("q4").value,
-        comment: document.getElementById("q-text").value
-    };
-
-    const existing = localStorage.getItem(FEEDBACK_STORAGE_KEY);
-    const list = existing ? JSON.parse(existing) : [];
-    list.push(submission);
-    localStorage.setItem(FEEDBACK_STORAGE_KEY, JSON.stringify(list));
-
-    const successMsg = document.getElementById("feedback-success-msg");
-    successMsg.classList.remove("hidden");
-    setTimeout(() => successMsg.classList.add("hidden"), 4000);
-    document.getElementById("q-text").value = "";
-}
-
-function showFeedbackStats() {
-    const existing = localStorage.getItem(FEEDBACK_STORAGE_KEY);
-    const list = existing ? JSON.parse(existing) : [];
-
-    if (list.length === 0) {
-        showCustomAlert("📊 데이터 없음", "아직 제출된 피드백이 없습니다.<br>설문을 먼저 제출해 주세요!");
-        return;
-    }
-
-    const total = list.length;
-    let q1 = 0, q2 = 0, q3 = 0;
-    list.forEach(item => {
-        if (parseInt(item.immersion) >= 4) q1++;
-        if (parseInt(item.audioQuality) >= 4) q2++;
-        if (item.duetIntention === "yes") q3++;
-    });
-
-    const pct = (n) => Math.round((n / total) * 100);
-
-    document.getElementById("stat-q1-pct").innerText = `${pct(q1)}%`;
-    document.getElementById("stat-q1-bar").style.width = `${pct(q1)}%`;
-    document.getElementById("stat-q2-pct").innerText = `${pct(q2)}%`;
-    document.getElementById("stat-q2-bar").style.width = `${pct(q2)}%`;
-    document.getElementById("stat-q3-pct").innerText = `${pct(q3)}%`;
-    document.getElementById("stat-q3-bar").style.width = `${pct(q3)}%`;
-
-    document.getElementById("stat-summary-text").innerHTML =
-        `총 <strong>${total}명</strong>이 검증에 참여했습니다. ` +
-        `에코 사운드 만족도 <strong>${pct(q2)}%</strong>, 함께 사용 의향 <strong>${pct(q3)}%</strong>.`;
-
-    openModal("stats-modal");
-}

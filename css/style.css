@@ -14,6 +14,19 @@ body {
 .neon-text-pink { text-shadow: 0 0 8px rgba(236, 72, 153, 0.8); }
 .neon-text-cyan { text-shadow: 0 0 8px rgba(34, 211, 238, 0.8); }
 
+/* SINGON 로고: 흐르는 그라데이션 + 네온 글로우 */
+.logo-glow {
+    background-size: 200% auto;
+    animation: logo-gradient-flow 5s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(236, 72, 153, 0.45));
+}
+@keyframes logo-gradient-flow {
+    to { background-position: 200% center; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .logo-glow { animation: none; }
+}
+
 /* Ambient glow default */
 #ambient-glow {
     background: linear-gradient(to top right, rgba(22, 78, 99, 0.1), #020617 50%, rgba(131, 24, 67, 0.1));
