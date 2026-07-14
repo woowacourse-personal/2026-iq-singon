@@ -86,22 +86,30 @@ function setPartnerCardVisible(visible) {
     card.classList.toggle("flex", visible);
 }
 
-// --- 관전석: roster 수신 시 좌측 컬럼에 관전자 칩 자동 배치 ---
+// --- 관전석: roster 수신 시 좌석 그리드에 관전자 자동 배치 ---
+// 빈 좌석은 점선 의자로 보여주고, 관전자가 들어오면 그 자리가 채워진다.
 function renderSpectators(ids) {
     const list = document.getElementById("spectator-list");
     document.getElementById("spectator-count").innerText = ids.length;
-    document.getElementById("spectator-empty").classList.toggle("hidden", ids.length > 0);
 
+    // 최소 4석 유지, 넘치면 2열 기준 짝수로 확장
+    const seatTotal = Math.max(4, Math.ceil(ids.length / 2) * 2);
     list.innerHTML = "";
-    ids.forEach((id, i) => {
-        const isMe = id === myPeerId;
-        const chip = document.createElement("div");
-        chip.className = "flex items-center gap-2 bg-slate-900/70 backdrop-blur-sm border border-slate-800 rounded-full pl-1.5 pr-3 py-1";
-        chip.innerHTML =
-            '<span class="w-6 h-6 rounded-full bg-violet-500/20 border border-violet-500/40 text-violet-300 flex items-center justify-center text-[10px]"><i class="fa-solid fa-eye"></i></span>' +
-            `<span class="text-[11px] font-semibold ${isMe ? "text-violet-300" : "text-slate-300"}">관전자 ${i + 1}${isMe ? " (나)" : ""}</span>`;
-        list.appendChild(chip);
-    });
+    for (let i = 0; i < seatTotal; i++) {
+        const seat = document.createElement("div");
+        const occupantId = ids[i];
+        if (occupantId) {
+            const isMe = occupantId === myPeerId;
+            seat.className = "h-14 rounded-xl bg-violet-500/15 border border-violet-500/40 flex flex-col items-center justify-center gap-0.5";
+            seat.innerHTML =
+                '<i class="fa-solid fa-eye text-violet-300 text-xs"></i>' +
+                `<span class="text-[10px] font-bold ${isMe ? "text-violet-200" : "text-slate-300"}">관전자 ${i + 1}${isMe ? " (나)" : ""}</span>`;
+        } else {
+            seat.className = "h-14 rounded-xl border border-dashed border-slate-800 flex items-center justify-center";
+            seat.innerHTML = '<i class="fa-solid fa-chair text-slate-700 text-sm"></i>';
+        }
+        list.appendChild(seat);
+    }
 }
 
 // --- 연결 상태 배지 ---
@@ -153,7 +161,7 @@ function renderVisualizers() {
         const indicator = document.getElementById("voice-indicator-me");
         const meCard = document.getElementById("visual-me-card");
         if (sum > 100) {
-            indicator.innerText = "Singing 🎤";
+            indicator.innerHTML = 'Singing <i class="fa-solid fa-microphone-lines"></i>';
             indicator.className = "text-[10px] text-cyan-400 mt-1 uppercase tracking-widest font-mono font-bold";
             meCard.style.boxShadow = "0 0 15px rgba(34, 211, 238, 0.4)";
             triggerAmbientPulse("cyan", sum / 500);
@@ -182,7 +190,7 @@ function renderVisualizers() {
     const pIndicator = document.getElementById("voice-indicator-partner");
     const pCard = document.getElementById("visual-partner-card");
     if (hasSignal) {
-        pIndicator.innerText = "Vocal Recv ⚡";
+        pIndicator.innerHTML = 'Vocal Recv <i class="fa-solid fa-bolt"></i>';
         pIndicator.className = "text-[10px] text-pink-400 mt-1 uppercase tracking-widest font-mono font-bold";
         pCard.style.boxShadow = "0 0 15px rgba(236, 72, 153, 0.4)";
         triggerAmbientPulse("pink", 0.3);

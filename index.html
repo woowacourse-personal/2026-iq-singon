@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SINGON - 온라인 노래방</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23ec4899'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><text x='50' y='72' font-size='58' text-anchor='middle'>🎤</text></svg>">
+    <!-- 듀엣 컨셉 파비콘: 교차된 마이크 두 개 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%23ec4899'/><stop offset='1' stop-color='%237c3aed'/></linearGradient></defs><rect width='100' height='100' rx='24' fill='url(%23g)'/><g transform='rotate(-12 34 50)'><rect x='27' y='20' width='14' height='30' rx='7' fill='white'/><line x1='34' y1='54' x2='34' y2='74' stroke='white' stroke-width='6' stroke-linecap='round'/></g><g transform='rotate(12 66 50)' opacity='0.9'><rect x='59' y='20' width='14' height='30' rx='7' fill='white'/><line x1='66' y1='54' x2='66' y2='74' stroke='white' stroke-width='6' stroke-linecap='round'/></g></svg>">
     <meta name="description" content="마이크 없이 헤드셋 하나로 멀리 있는 친구와 함께 부르는 온라인 노래방">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,8 +23,11 @@
 <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-4 py-3">
     <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center space-x-3">
-            <div class="bg-gradient-to-r from-pink-500 to-violet-600 p-2.5 rounded-xl shadow-lg shadow-pink-500/20">
-                <i class="fa-solid fa-microphone-lines text-xl text-white"></i>
+            <div class="bg-gradient-to-r from-pink-500 to-violet-600 p-2 rounded-xl shadow-lg shadow-pink-500/20">
+                <svg width="28" height="28" viewBox="0 0 100 100" aria-hidden="true">
+                    <g transform="rotate(-12 34 50)"><rect x="27" y="20" width="14" height="30" rx="7" fill="white"/><line x1="34" y1="54" x2="34" y2="74" stroke="white" stroke-width="6" stroke-linecap="round"/></g>
+                    <g transform="rotate(12 66 50)" opacity="0.9"><rect x="59" y="20" width="14" height="30" rx="7" fill="white"/><line x1="66" y1="54" x2="66" y2="74" stroke="white" stroke-width="6" stroke-linecap="round"/></g>
+                </svg>
             </div>
             <div>
                 <h1 class="logo-glow text-xl font-black tracking-wider bg-gradient-to-r from-pink-400 via-purple-400 via-cyan-400 to-pink-400 bg-clip-text text-transparent">SINGON</h1>
@@ -177,14 +181,15 @@
             <div id="ambient-glow" class="absolute inset-0 pointer-events-none transition-all duration-300"></div>
 
             <!-- Stage Header: mode & song select -->
-            <div class="z-10 p-4 flex flex-wrap justify-between items-center gap-3 bg-slate-900/50 backdrop-blur-sm border-b border-slate-800/40">
-                <div class="flex items-center space-x-2">
+            <div class="z-10 p-4 flex flex-wrap items-center gap-3 bg-slate-900/50 backdrop-blur-sm border-b border-slate-800/40">
+                <!-- 좌우 flex-1로 균형을 맞춰 모드 토글이 정중앙에 오도록 -->
+                <div class="flex-1 min-w-[130px] flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping"></span>
                     <span class="text-xs uppercase font-semibold text-slate-300 tracking-wider">LIVE STAGE</span>
                 </div>
 
-                <!-- MR 소스 모드 (중앙) -->
-                <div class="flex flex-wrap items-center gap-2">
+                <!-- MR 소스 모드 (정중앙) -->
+                <div class="flex flex-wrap items-center justify-center gap-2">
                     <div class="flex rounded-lg overflow-hidden border border-slate-800 text-xs font-bold">
                         <button id="mode-btn-youtube" onclick="setKaraokeMode('youtube')" class="px-3 py-1.5 bg-red-600/80 text-white transition">
                             <i class="fa-brands fa-youtube"></i> 유튜브 MR
@@ -203,12 +208,14 @@
                 </div>
 
                 <!-- YouTube URL input (우측, youtube mode only) -->
-                <div id="yt-input-group" class="flex gap-1.5">
-                    <input id="yt-url-input" type="text" placeholder="금영(KY) 공식 MR 영상 URL 붙여넣기"
-                           class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 w-56 text-slate-300 text-xs focus:ring-1 focus:ring-red-500 focus:outline-none">
-                    <button onclick="loadYouTubeSong()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition whitespace-nowrap">
-                        불러오기
-                    </button>
+                <div class="flex-1 min-w-[130px] flex justify-end">
+                    <div id="yt-input-group" class="flex gap-1.5">
+                        <input id="yt-url-input" type="text" placeholder="유튜브 MR 영상 URL 붙여넣기"
+                               class="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5 w-56 text-slate-300 text-xs focus:ring-1 focus:ring-red-500 focus:outline-none">
+                        <button onclick="loadYouTubeSong()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition whitespace-nowrap">
+                            불러오기
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -219,8 +226,7 @@
                     <div class="text-[10px] uppercase tracking-widest text-slate-500 font-mono whitespace-nowrap">
                         <i class="fa-solid fa-eye text-violet-400"></i> 관전석 <span id="spectator-count" class="text-violet-300 font-bold">0</span>
                     </div>
-                    <div id="spectator-list" class="flex flex-row lg:flex-col flex-wrap gap-2"></div>
-                    <span id="spectator-empty" class="text-[10px] text-slate-600 leading-relaxed">비어 있음<br class="hidden lg:block">친구가 더 오면 여기 앉아요</span>
+                    <div id="spectator-list" class="w-full grid grid-cols-4 lg:grid-cols-2 gap-2"></div>
                 </aside>
 
                 <!-- 무대 (우측) -->
@@ -251,7 +257,7 @@
                     <div id="yt-player" class="w-full h-full flex items-center justify-center text-slate-600 text-xs">
                         <div>
                             <i class="fa-brands fa-youtube text-3xl text-red-500/50 block mb-2"></i>
-                            상단에 금영(KY) 공식 MR 등 영상 주소를 붙여넣으면<br>친구와 재생 위치가 자동 동기화됩니다.
+                            상단에 유튜브 MR 영상 주소를 붙여넣으면<br>친구와 재생 위치가 자동 동기화됩니다.
                         </div>
                     </div>
                 </div>
@@ -361,7 +367,10 @@
         <div class="absolute -left-10 -bottom-10 w-32 h-32 bg-cyan-500/10 rounded-full blur-2xl animate-pulse"></div>
 
         <div class="bg-gradient-to-r from-pink-500 to-violet-600 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-pink-500/20">
-            <i class="fa-solid fa-microphone-lines text-3xl text-white"></i>
+            <svg width="42" height="42" viewBox="0 0 100 100" aria-hidden="true">
+                <g transform="rotate(-12 34 50)"><rect x="27" y="20" width="14" height="30" rx="7" fill="white"/><line x1="34" y1="54" x2="34" y2="74" stroke="white" stroke-width="6" stroke-linecap="round"/></g>
+                <g transform="rotate(12 66 50)" opacity="0.9"><rect x="59" y="20" width="14" height="30" rx="7" fill="white"/><line x1="66" y1="54" x2="66" y2="74" stroke="white" stroke-width="6" stroke-linecap="round"/></g>
+            </svg>
         </div>
 
         <h3 class="text-2xl font-black mb-2 bg-gradient-to-r from-pink-400 to-cyan-400 bg-clip-text text-transparent">노래방 초대장 도착!</h3>
@@ -387,7 +396,7 @@
 </div>
 
 <footer class="border-t border-slate-800/80 py-6 bg-slate-950 text-center text-xs text-slate-500">
-    <p>© 2026 Singon. 노래를 켜다, 함께 부르다.</p>
+    <p>© 2026 SINGON</p>
 </footer>
 
 <!-- Scripts (load order matters) -->

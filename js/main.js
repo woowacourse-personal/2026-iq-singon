@@ -24,4 +24,5 @@ window.onload = function () {
 
     initPeerJS();
     updateAudioSettings(); // 라벨 초기 표시
+    renderSpectators([]); // 빈 좌석 그리드 초기 표시
 };
