@@ -25,10 +25,16 @@ let dataArrayPartner = null;
 let synthGainNode = null;
 
 function initAudio() {
-    if (audioContext) return;
+    if (audioContext) {
+        // iOS 사파리: 유저 제스처 시점마다 suspended 상태를 풀어준다.
+        // 모든 제스처 핸들러(마이크 토글, 재생, 초대 수락, 연결)가 initAudio를 거치므로 여기서 중앙 처리.
+        if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
+        return;
+    }
 
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     audioContext = new AudioContextClass({ latencyHint: "interactive" });
+    if (audioContext.state === "suspended") audioContext.resume().catch(() => {});
 
     micGainNode = audioContext.createGain();
     micGainNode.gain.value = 0.8;

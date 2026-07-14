@@ -37,9 +37,21 @@ function initPeerJS() {
     peer.on("error", (err) => {
         if (err.type === "peer-unavailable") {
             showCustomAlert("🔌 연결 실패", "해당 방 ID를 찾을 수 없습니다.<br>친구가 페이지를 열어둔 상태인지, ID에 오타가 없는지 확인해 주세요.");
+        } else if (err.type === "unavailable-id") {
+            // 4자리 랜덤 ID 충돌 → 새 ID로 재시도
+            logSystemMessage("[서버] 방 ID가 이미 사용 중입니다. 새 ID로 재시도합니다.");
+            peer.destroy();
+            initPeerJS();
         } else {
             logSystemMessage(`[에러] 연결 오류: ${err.type}`);
         }
+    });
+
+    // 시그널링 서버 연결 끊김 → 자동 재접속 (기존 ID 유지)
+    peer.on("disconnected", () => {
+        if (peer.destroyed) return;
+        logSystemMessage("[서버] 시그널링 서버와 연결이 끊겼습니다. 재접속 시도 중...");
+        peer.reconnect();
     });
 
     // 상대가 데이터 채널로 들어온 경우

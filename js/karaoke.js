@@ -76,10 +76,6 @@ function loadYouTubeApi() {
             tag.src = "https://www.youtube.com/iframe_api";
             document.head.appendChild(tag);
         }
-        window.onYouTubeIframeAPIReady = () => {
-            ytApiReady = true;
-            resolve();
-        };
         // 이미 로드 완료된 경우 폴링
         const check = setInterval(() => {
             if (window.YT && window.YT.Player) {
@@ -88,6 +84,11 @@ function loadYouTubeApi() {
                 resolve();
             }
         }, 200);
+        window.onYouTubeIframeAPIReady = () => {
+            ytApiReady = true;
+            clearInterval(check);
+            resolve();
+        };
     });
 }
 
@@ -138,7 +139,8 @@ async function loadYouTubeSong(videoIdFromPeer = null, broadcast = true) {
                     e.target.setVolume(parseInt(musicVol, 10));
                     logSystemMessage("[유튜브] MR 영상 로드 완료. 노래 시작을 누르면 친구와 동시 재생됩니다.");
                 },
-                onStateChange: onYtStateChange
+                onStateChange: onYtStateChange,
+                onError: onYtError
             }
         });
     }
@@ -162,7 +164,38 @@ function onYtStateChange(event) {
         setPlayButtonState(false);
         sendData({ t: "yt", a: "pause", time: ytPlayer.getCurrentTime() });
         stopYtSyncLoop();
+    } else if (event.data === YT.PlayerState.ENDED && isKaraokePlaying) {
+        isKaraokePlaying = false;
+        isSyncLeader = false;
+        setPlayButtonState(false);
+        stopYtSyncLoop();
+        logSystemMessage("[유튜브] 곡이 끝났습니다. 다음 곡을 선곡해 보세요!");
     }
+}
+
+// 임베드 비허용(101/150) 등 유튜브 플레이어 오류 처리
+function onYtError(event) {
+    const code = event.data;
+    isKaraokePlaying = false;
+    isSyncLeader = false;
+    setPlayButtonState(false);
+    stopYtSyncLoop();
+    currentVideoId = null;
+
+    let title = "⚠️ 유튜브 재생 오류";
+    let message;
+    if (code === 101 || code === 150) {
+        title = "🚫 임베드 비허용 영상";
+        message = "이 영상은 소유자가 외부 사이트 재생(임베드)을 허용하지 않았습니다.<br>다른 공식 MR 영상 주소를 붙여넣어 주세요.";
+    } else if (code === 100) {
+        message = "영상을 찾을 수 없습니다.<br>삭제되었거나 비공개 처리된 영상입니다.";
+    } else if (code === 2) {
+        message = "잘못된 영상 주소입니다.<br>URL을 다시 확인해 주세요.";
+    } else {
+        message = `영상을 재생할 수 없습니다. (오류 코드: ${code})<br>다른 영상으로 다시 시도해 주세요.`;
+    }
+    showCustomAlert(title, message);
+    logSystemMessage(`[유튜브] 재생 오류 (코드 ${code}). 다른 영상을 불러와 주세요.`);
 }
 
 // ============================================================
@@ -226,8 +259,7 @@ function handleRemoteYt(msg) {
 // 통합 재생 컨트롤 (노래 시작/일시정지/정지 버튼)
 // ============================================================
 function toggleKaraokeSong() {
-    initAudio();
-    if (audioContext.state === "suspended") audioContext.resume();
+    initAudio(); // suspended 상태 resume 포함 (audio.js)
 
     if (karaokeMode === "youtube") {
         if (!ytPlayer || !ytPlayer.playVideo) {
