@@ -20,7 +20,13 @@ let ytApiLoading = false;
 let currentVideoId = null;
 let ytSyncInterval = null;
 let isSyncLeader = false;          // 마지막으로 재생을 시작한 쪽이 리더
-const YT_DRIFT_THRESHOLD = 0.4;    // 초. 이 이상 어긋나면 seek 보정
+const YT_SYNC_INTERVAL_MS = 2000;  // 리더의 sync 브로드캐스트 주기
+const YT_DRIFT_FINE = 0.08;        // 초. 이하는 측정 노이즈로 보고 무시
+const YT_DRIFT_HARD = 0.6;         // 초. 초과 시 하드 시크 (그 사이는 재생속도 미세조정)
+let ytNudgeTimer = null;
+let ytNudging = false;
+let ytLastCorrectionWasNudge = false;
+let ytLastAbsDrift = 0;
 
 // ============================================================
 // 모드 전환
@@ -186,7 +192,11 @@ function onYtError(event) {
     let message;
     if (code === 101 || code === 150) {
         title = "🚫 임베드 비허용 영상";
-        message = "이 영상은 소유자가 외부 사이트 재생(임베드)을 허용하지 않았습니다.<br>다른 공식 MR 영상 주소를 붙여넣어 주세요.";
+        message = "이 영상은 소유자(또는 음원 권리사)가 외부 사이트 재생을 차단했습니다.<br>" +
+            "아래 공식 채널의 MR은 임베드가 허용되어 정상 재생됩니다.<br><br>" +
+            '<a href="https://www.youtube.com/@TJ%EB%85%B8%EB%9E%98%EB%B0%A9TJKaraoke/search" target="_blank" rel="noopener" class="text-cyan-400 underline font-bold">▶ TJ노래방 공식 채널에서 곡 검색 ↗</a><br>' +
+            '<a href="https://www.youtube.com/@KARAOKEKY/search" target="_blank" rel="noopener" class="text-cyan-400 underline font-bold">▶ 금영노래방 공식 채널에서 곡 검색 ↗</a><br><br>' +
+            "검색 결과에서 원하는 곡의 주소를 복사해 다시 붙여넣어 주세요.";
     } else if (code === 100) {
         message = "영상을 찾을 수 없습니다.<br>삭제되었거나 비공개 처리된 영상입니다.";
     } else if (code === 2) {
@@ -209,16 +219,72 @@ function broadcastPlay() {
 
 function startYtSyncLoop() {
     stopYtSyncLoop();
+    // 재생 직후 수신 측 버퍼링 지연이 가장 크므로 1초 뒤 조기 sync 1회
+    setTimeout(() => {
+        if (isSyncLeader && ytPlayer && isKaraokePlaying) {
+            sendData({ t: "yt", a: "sync", time: ytPlayer.getCurrentTime() });
+        }
+    }, 1000);
     ytSyncInterval = setInterval(() => {
         if (isSyncLeader && ytPlayer && isKaraokePlaying) {
             sendData({ t: "yt", a: "sync", time: ytPlayer.getCurrentTime() });
         }
-    }, 4000);
+    }, YT_SYNC_INTERVAL_MS);
 }
 
 function stopYtSyncLoop() {
     clearInterval(ytSyncInterval);
     ytSyncInterval = null;
+    clearRateNudge();
+}
+
+// ============================================================
+// 드리프트 보정
+// 작은 어긋남(0.08~0.6s)은 재생속도 미세조정(0.75x/1.25x)으로 흡수해
+// 시크로 인한 재생 끊김 없이 따라잡고, 큰 어긋남만 하드 시크한다.
+// ============================================================
+function applySyncCorrection(expected) {
+    const drift = ytPlayer.getCurrentTime() - expected; // 양수: 내가 앞섬
+    const abs = Math.abs(drift);
+
+    if (abs <= YT_DRIFT_FINE) {
+        clearRateNudge();
+        ytLastCorrectionWasNudge = false;
+        ytLastAbsDrift = 0;
+        return;
+    }
+
+    // 직전 미세조정에도 드리프트가 줄지 않으면(재생속도 변경 미지원 환경) 시크로 전환
+    const nudgeIneffective = ytLastCorrectionWasNudge && abs >= ytLastAbsDrift - 0.03;
+
+    if (abs > YT_DRIFT_HARD || nudgeIneffective) {
+        clearRateNudge();
+        ytPlayer.seekTo(expected, true);
+        ytLastCorrectionWasNudge = false;
+        logSystemMessage(`[동기화] 드리프트 ${abs.toFixed(2)}s 감지 → 위치 보정.`);
+    } else {
+        startRateNudge(drift);
+        ytLastCorrectionWasNudge = true;
+    }
+    ytLastAbsDrift = abs;
+}
+
+function startRateNudge(drift) {
+    ytNudging = true;
+    // 1.25x/0.75x는 초당 0.25s를 따라잡음 (피치는 브라우저가 보존)
+    ytPlayer.setPlaybackRate(drift > 0 ? 0.75 : 1.25);
+    clearTimeout(ytNudgeTimer);
+    ytNudgeTimer = setTimeout(() => {
+        if (ytPlayer && ytPlayer.setPlaybackRate) ytPlayer.setPlaybackRate(1);
+        ytNudging = false;
+    }, Math.min(1500, (Math.abs(drift) / 0.25) * 1000));
+}
+
+function clearRateNudge() {
+    clearTimeout(ytNudgeTimer);
+    ytNudgeTimer = null;
+    if (ytNudging && ytPlayer && ytPlayer.setPlaybackRate) ytPlayer.setPlaybackRate(1);
+    ytNudging = false;
 }
 
 // peer.js에서 호출: 원격 유튜브 제어 메시지 처리
@@ -246,12 +312,7 @@ function handleRemoteYt(msg) {
         setPlayButtonState(false);
         stopYtSyncLoop();
     } else if (msg.a === "sync" && isKaraokePlaying && !isSyncLeader) {
-        const expected = msg.time + compensation;
-        const drift = Math.abs(ytPlayer.getCurrentTime() - expected);
-        if (drift > YT_DRIFT_THRESHOLD) {
-            ytPlayer.seekTo(expected, true);
-            logSystemMessage(`[동기화] 드리프트 ${drift.toFixed(2)}s 감지 → 위치 보정.`);
-        }
+        applySyncCorrection(msg.time + compensation);
     }
 }
 
