@@ -27,6 +27,15 @@ body {
     .logo-glow { animation: none; }
 }
 
+/* 슬라이더 값 라벨 팝 (사운드 콘솔 조작 피드백) */
+.value-pop {
+    display: inline-block;
+    animation: value-pop 0.25s ease;
+}
+@keyframes value-pop {
+    40% { transform: scale(1.3); text-shadow: 0 0 10px currentColor; }
+}
+
 /* Ambient glow default */
 #ambient-glow {
     background: linear-gradient(to top right, rgba(22, 78, 99, 0.1), #020617 50%, rgba(131, 24, 67, 0.1));

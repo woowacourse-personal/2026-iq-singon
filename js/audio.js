@@ -109,6 +109,7 @@ async function toggleMic() {
             micGainNode.connect(analyserMe);
 
             document.getElementById("monitoring-control").classList.remove("opacity-60", "pointer-events-none");
+            document.getElementById("monitoring-hint").classList.add("hidden");
             logSystemMessage("[마이크] 오디오 입력 활성화! 에코 이펙터 장착 완료.");
             updateAudioSettings();
             // 이미 입장해 있는 관전자에게도 목소리 송출 시작 (peer.js)
@@ -124,6 +125,7 @@ async function toggleMic() {
             micStream = null;
         }
         document.getElementById("monitoring-control").classList.add("opacity-60", "pointer-events-none");
+        document.getElementById("monitoring-hint").classList.remove("hidden");
         logSystemMessage("[마이크] 마이크 장치가 꺼졌습니다.");
     }
 
@@ -143,7 +145,29 @@ function toggleMonitoring() {
     }
 }
 
-function updateAudioSettings() {
+// 슬라이더 조작 피드백: 값에 따라 음정이 변하는 짧은 블립 (드래그 중 과도 재생 방지 스로틀)
+let lastBlipAt = 0;
+function playSettingBlip(norm) {
+    if (!audioContext) return;
+    const now = performance.now();
+    if (now - lastBlipAt < 70) return;
+    lastBlipAt = now;
+
+    const t = audioContext.currentTime;
+    const osc = audioContext.createOscillator();
+    const g = audioContext.createGain();
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(240 + norm * 720, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.05, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+    osc.connect(g);
+    g.connect(audioContext.destination);
+    osc.start(t);
+    osc.stop(t + 0.1);
+}
+
+function updateAudioSettings(changedEl = null) {
     const micVol = document.getElementById("slider-mic-vol").value;
     const echoDepth = document.getElementById("slider-echo-depth").value;
     const echoDelay = document.getElementById("slider-echo-delay").value;
@@ -155,6 +179,18 @@ function updateAudioSettings() {
     document.getElementById("label-echo-delay").innerText = `${(echoDelay / 100).toFixed(2)}s`;
     document.getElementById("label-music-vol").innerText = `${musicVol}%`;
     document.getElementById("label-friend-vol").innerText = `${friendVol}%`;
+
+    // 조작 피드백: 값 라벨 팝 애니메이션 + 블립음
+    if (changedEl) {
+        initAudio();
+        const label = document.getElementById(changedEl.id.replace("slider-", "label-"));
+        if (label) {
+            label.classList.remove("value-pop");
+            void label.offsetWidth; // 애니메이션 재시작
+            label.classList.add("value-pop");
+        }
+        playSettingBlip(changedEl.value / (parseFloat(changedEl.max) || 100));
+    }
 
     if (!audioContext) return;
 

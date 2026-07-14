@@ -69,12 +69,12 @@
                 <div>
                     <div class="flex justify-between items-center mb-1">
                         <label class="block text-xs text-slate-400">내 고유 방 ID</label>
-                        <span class="text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 px-1.5 py-0.5 rounded">친구가 접속할 ID</span>
+                        <span class="w-24 text-center text-[10px] text-emerald-400 font-semibold bg-emerald-500/10 py-0.5 rounded">친구가 접속할 ID</span>
                     </div>
                     <div class="flex gap-2">
                         <input id="my-peer-id" type="text" readonly value="불러오는 중..."
                                class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 w-full text-emerald-400 font-mono text-xs font-bold focus:outline-none">
-                        <button onclick="copyRoomID()" class="bg-slate-800 hover:bg-slate-700 text-white px-3.5 py-2 rounded-lg transition duration-200 whitespace-nowrap shrink-0" title="아이디 복사">
+                        <button onclick="copyRoomID()" class="w-24 text-center bg-slate-800 hover:bg-slate-700 text-white py-2 rounded-lg transition duration-200 whitespace-nowrap shrink-0" title="아이디 복사">
                             <i class="fa-regular fa-copy"></i> 복사
                         </button>
                     </div>
@@ -85,7 +85,7 @@
                 </button>
 
                 <div class="border-t border-slate-800/60 pt-4">
-                    <label class="block text-xs text-slate-400 mb-1">친구 방 ID로 연결 (듀엣 접속)</label>
+                    <label class="block text-xs text-slate-400 mb-1">친구 방 ID로 연결</label>
                     <div class="flex gap-2">
                         <input id="target-peer-id" type="text" placeholder="친구의 방 ID를 입력하세요"
                                class="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 w-full text-slate-300 font-mono text-xs focus:ring-1 focus:ring-pink-500 focus:outline-none">
@@ -121,7 +121,7 @@
                 </div>
 
                 <div id="monitoring-control" class="flex items-center justify-between text-xs border-t border-pink-500/10 pt-2.5 opacity-60 pointer-events-none transition-all duration-300">
-                    <span class="text-slate-300">내 목소리 귀로 듣기 (모니터링)</span>
+                    <span class="text-slate-300">내 목소리 귀로 듣기 (모니터링) <span id="monitoring-hint" class="text-[10px] text-slate-500">· 마이크를 켜면 활성화</span></span>
                     <input id="monitoring-toggle" type="checkbox" onchange="toggleMonitoring()" class="rounded bg-slate-800 border-slate-700 text-pink-500 focus:ring-pink-500">
                 </div>
             </div>
@@ -132,35 +132,35 @@
                         <span>마이크 볼륨 (Mic Vol)</span>
                         <span id="label-mic-vol" class="text-pink-400 font-semibold">80%</span>
                     </div>
-                    <input id="slider-mic-vol" type="range" min="0" max="100" value="80" oninput="updateAudioSettings()" class="w-full accent-pink-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    <input id="slider-mic-vol" type="range" min="0" max="100" value="80" oninput="updateAudioSettings(this)" class="w-full accent-pink-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
                 </div>
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
                         <span>노래방 에코 깊이 (Echo Feedback)</span>
                         <span id="label-echo-depth" class="text-pink-400 font-semibold">40%</span>
                     </div>
-                    <input id="slider-echo-depth" type="range" min="0" max="85" value="40" oninput="updateAudioSettings()" class="w-full accent-pink-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    <input id="slider-echo-depth" type="range" min="0" max="85" value="40" oninput="updateAudioSettings(this)" class="w-full accent-pink-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
                 </div>
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
                         <span>에코 딜레이 (Delay Time)</span>
                         <span id="label-echo-delay" class="text-pink-400 font-semibold">0.30s</span>
                     </div>
-                    <input id="slider-echo-delay" type="range" min="10" max="80" value="30" oninput="updateAudioSettings()" class="w-full accent-pink-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    <input id="slider-echo-delay" type="range" min="10" max="80" value="30" oninput="updateAudioSettings(this)" class="w-full accent-pink-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
                 </div>
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
                         <span>반주/MR 볼륨 (Music Vol)</span>
                         <span id="label-music-vol" class="text-cyan-400 font-semibold">40%</span>
                     </div>
-                    <input id="slider-music-vol" type="range" min="0" max="100" value="40" oninput="updateAudioSettings()" class="w-full accent-cyan-400 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    <input id="slider-music-vol" type="range" min="0" max="100" value="40" oninput="updateAudioSettings(this)" class="w-full accent-cyan-400 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
                 </div>
                 <div>
                     <div class="flex justify-between text-xs text-slate-400 mb-1">
                         <span>친구 목소리 볼륨 (Friend Vol)</span>
                         <span id="label-friend-vol" class="text-emerald-400 font-semibold">130%</span>
                     </div>
-                    <input id="slider-friend-vol" type="range" min="0" max="200" value="130" oninput="updateAudioSettings()" class="w-full accent-emerald-400 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
+                    <input id="slider-friend-vol" type="range" min="0" max="200" value="130" oninput="updateAudioSettings(this)" class="w-full accent-emerald-400 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer">
                 </div>
             </div>
         </div>
@@ -226,7 +226,7 @@
                     <div class="text-[10px] uppercase tracking-widest text-slate-500 font-mono whitespace-nowrap">
                         <i class="fa-solid fa-eye text-violet-400"></i> 관전석 <span id="spectator-count" class="text-violet-300 font-bold">0</span>
                     </div>
-                    <div id="spectator-list" class="w-full grid grid-cols-4 lg:grid-cols-2 gap-2"></div>
+                    <div id="spectator-list" class="w-full grid grid-cols-4 lg:grid-cols-1 gap-2"></div>
                 </aside>
 
                 <!-- 무대 (우측) -->
@@ -239,7 +239,6 @@
                         </div>
                         <span class="text-xs font-semibold text-slate-300">나 (YOU)</span>
                         <div class="w-full h-8 flex items-center justify-center gap-[2px] mt-2 px-4" id="visualizer-me"></div>
-                        <span class="text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-mono" id="voice-indicator-me">Mic Off</span>
                     </div>
 
                     <div class="w-56 hidden flex-col items-center p-3 bg-slate-900/40 backdrop-blur-sm border border-slate-800 rounded-2xl relative overflow-hidden transition-all duration-300" id="visual-partner-card">

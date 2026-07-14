@@ -92,8 +92,8 @@ function renderSpectators(ids) {
     const list = document.getElementById("spectator-list");
     document.getElementById("spectator-count").innerText = ids.length;
 
-    // 최소 4석 유지, 넘치면 2열 기준 짝수로 확장
-    const seatTotal = Math.max(4, Math.ceil(ids.length / 2) * 2);
+    // 최소 4석 유지, 차면 빈 좌석 하나를 더 붙여 확장
+    const seatTotal = Math.max(4, ids.length + 1);
     list.innerHTML = "";
     for (let i = 0; i < seatTotal; i++) {
         const seat = document.createElement("div");
@@ -158,16 +158,11 @@ function renderVisualizers() {
             bars[i].style.height = `${Math.min(100, Math.max(10, (value / 255) * 100))}%`;
         }
 
-        const indicator = document.getElementById("voice-indicator-me");
         const meCard = document.getElementById("visual-me-card");
         if (sum > 100) {
-            indicator.innerHTML = 'Singing <i class="fa-solid fa-microphone-lines"></i>';
-            indicator.className = "text-[10px] text-cyan-400 mt-1 uppercase tracking-widest font-mono font-bold";
             meCard.style.boxShadow = "0 0 15px rgba(34, 211, 238, 0.4)";
             triggerAmbientPulse("cyan", sum / 500);
         } else {
-            indicator.innerText = "Listening";
-            indicator.className = "text-[10px] text-slate-500 mt-1 uppercase tracking-widest font-mono";
             meCard.style.boxShadow = "none";
         }
     }
