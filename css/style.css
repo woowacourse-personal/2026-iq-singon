@@ -1,0 +1,25 @@
+body {
+    font-family: 'Noto Sans KR', 'Inter', sans-serif;
+    background-color: #0b0c10;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0f172a; }
+::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 3px; }
+
+/* Neon utilities */
+.neon-border-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
+.neon-border-pink { box-shadow: 0 0 15px rgba(236, 72, 153, 0.5); }
+.neon-text-pink { text-shadow: 0 0 8px rgba(236, 72, 153, 0.8); }
+.neon-text-cyan { text-shadow: 0 0 8px rgba(34, 211, 238, 0.8); }
+
+/* Ambient glow default */
+#ambient-glow {
+    background: linear-gradient(to top right, rgba(22, 78, 99, 0.1), #020617 50%, rgba(131, 24, 67, 0.1));
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .animate-ping, .animate-pulse, .animate-bounce { animation: none; }
+}
